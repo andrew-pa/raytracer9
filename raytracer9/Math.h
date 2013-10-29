@@ -85,6 +85,20 @@
 			}
 			throw i;
 		}
+
+		inline float& operator [](uint i)
+		{
+			switch (i)
+			{
+			case 0:
+				return x;
+			case 1:
+				return y;
+			case 2:
+				return z;
+			}
+			throw i;
+		}
 	};
 
 	static const vec3 vec3_up = vec3(0, 1, 0);
@@ -191,6 +205,7 @@
 	{
 		return vec3(1.f/v.x, 1.f/v.y, 1.f/v.z);
 	}
+
 #pragma endregion
 #pragma endregion
 
@@ -310,6 +325,31 @@
 				p.z > Min.z && p.z < Max.z)
 				return true;
 			return false;
+		}
+
+		//intersection with a line segment
+		inline bool intersects(vec3 s, vec3 end) const
+		{
+			vec3 d = (s - end) * .5f;
+			vec3 e = (Max - Min) * .5f;
+			vec3 c = s + d - (Min + Max) * .5f;
+			vec3 ad;
+			ad.x = fabsf(d.x); ad.y = fabsf(d.y); ad.z = fabsf(d.z);
+			if (fabsf(c[0]) > e[0] + ad[0])
+				return false;
+			if (fabsf(c[1]) > e[1] + ad[1])
+				return false;
+			if (fabsf(c[2]) > e[2] + ad[2])
+				return false;
+
+			if (fabsf(d[1] * c[2] - d[2] * c[1]) > e[1] * ad[2] + e[2] * ad[1] + 0.0001f)
+				return false;
+			if (fabsf(d[2] * c[0] - d[0] * c[2]) > e[2] * ad[0] + e[0] * ad[2] + 0.0001f)
+				return false;
+			if (fabsf(d[0] * c[1] - d[1] * c[0]) > e[0] * ad[1] + e[1] * ad[0] + 0.0001f)
+				return false;
+
+			return true;
 		}
 
 #define FASTAABB

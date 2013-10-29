@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	for(int i = 0; i < 8; ++i)
 		prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
 	auto tmbt = (double)clock();
-	prims.push_back(new TriangleMesh("teapot.obj", matrix_idenity(), 8, 8));
+	prims.push_back(new TriangleMesh("tri.obj", matrix_idenity(), 8, 8));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;

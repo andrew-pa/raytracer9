@@ -23,7 +23,7 @@ namespace raytracer9
 
 		inline aabb bounds() const override { return _bounds; } 
 		inline vec3 center() override { return _bounds.Center(); }
-		inline bool inside(const aabb& b) override { return _bounds.Inside(b); }
+		inline bool containedBy(const aabb& b) override { return _bounds.Inside(b); }
 	};
 };
 

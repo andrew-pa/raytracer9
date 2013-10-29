@@ -58,7 +58,7 @@ namespace raytracer9
 				return mesh->hitTriangle(i0, i1, i2, r, hr);
 			}
 
-			inline bool inside(const aabb& b)
+			inline bool containedBy(const aabb& b)
 			{
 				return _b.Inside(b);
 			//	return b.Inside(center());
@@ -67,6 +67,14 @@ namespace raytracer9
 			//		b.Inside(mesh->vertices[i2].pos);
 			}
 
+			inline bool intersects(const aabb& b) override
+			{
+				vec3 v0 = mesh->vertices[i0].pos;
+				vec3 v1 = mesh->vertices[i1].pos;
+				vec3 v2 = mesh->vertices[i2].pos;
+
+				return b.intersects(v0, v1) || b.intersects(v0, v2) || b.intersects(v1, v2);
+			}
 		};
 
 		TriangleMesh(const vector<vertex>& v, const vector<uint>& i, const matrix4x4& w = matrix_idenity(),
@@ -91,7 +99,7 @@ namespace raytracer9
 		{
 			return _tree->center();
 		}
-		inline bool inside(const aabb& b) override
+		inline bool containedBy(const aabb& b) override
 		{
 			return _tree->bounds().Inside(b);
 		}

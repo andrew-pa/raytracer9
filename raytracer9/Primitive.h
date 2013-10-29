@@ -27,7 +27,11 @@ public:
 	virtual bool hit(const ray& r, hitrecord& hr) = 0;
 	virtual aabb bounds() const = 0;
 	virtual vec3 center() = 0;
-	virtual bool inside(const aabb& b) = 0;
+	virtual bool containedBy(const aabb& b) = 0;
+	virtual bool intersects(const aabb& b)
+	{
+		return bounds().Inside(b);
+	}
 };
 
 class Sphere : public Primitive
@@ -98,7 +102,7 @@ public:
 	inline vec3 center() override { return _c; }
 	inline vec3& center_() { return _c; }
 	inline float& radius() { return _r; }
-	inline bool inside(const aabb& b) override { return bounds().Inside(b); }
+	inline bool containedBy(const aabb& b) override { return bounds().Inside(b); }
 };
 
 };

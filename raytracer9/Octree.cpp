@@ -32,7 +32,7 @@ namespace raytracer9
 		vector<Primitive*> n;
 		for(uint i = 0; i < prims.size(); ++i)
 		{
-			if(prims[i]->inside(_bounds))
+			if (prims[i]->containedBy(_bounds) || prims[i]->intersects(_bounds))
 			{
 				n.push_back(prims[i]);
 			}
