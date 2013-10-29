@@ -128,7 +128,7 @@ namespace raytracer9
 		vector<Primitive*> ts;
 		for(auto iv = vertices.begin(); iv != vertices.end(); ++iv)
 			bnds.AddPoint(iv->pos);
-		for(uint ix = 0; ix+3 < indices.size(); ix+=3)
+		for(uint ix = 0; ix < indices.size(); ix+=3)
 		{
 			ts.push_back(new Triangle(indices[ix], indices[ix+1], indices[ix+2], this));
 		}

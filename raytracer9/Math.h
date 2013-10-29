@@ -320,9 +320,9 @@
 
 		inline bool Inside(vec3 p) const
 		{
-			if(p.x > Min.x && p.x < Max.x &&
-				p.y > Min.y && p.y < Max.y &&
-				p.z > Min.z && p.z < Max.z)
+			if(p.x >= Min.x && p.x <= Max.x &&
+				p.y >= Min.y && p.y <= Max.y &&
+				p.z >= Min.z && p.z <= Max.z)
 				return true;
 			return false;
 		}
@@ -330,6 +330,8 @@
 		//intersection with a line segment
 		inline bool intersects(vec3 s, vec3 end) const
 		{
+			if (Inside(s) || Inside(end))
+				return true;
 			vec3 d = (s - end) * .5f;
 			vec3 e = (Max - Min) * .5f;
 			vec3 c = s + d - (Min + Max) * .5f;

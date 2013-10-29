@@ -28,6 +28,12 @@ namespace raytracer9
 	OctreeNode::OctreeNode(aabb b, const vector<Primitive*>& prims, int depth, uint targetPrims)
 	{
 		_bounds = b;
+		if (depth <= 0 || prims.size() <= targetPrims)
+		{
+			nodes = prims;
+			cout << "[LX " << prims.size() << "]";
+			return;
+		}
 		//nodes = prims;
 		vector<Primitive*> n;
 		for(uint i = 0; i < prims.size(); ++i)
@@ -37,20 +43,20 @@ namespace raytracer9
 				n.push_back(prims[i]);
 			}
 		}
-		if(depth <= 0 || n.size() <= targetPrims)
+		if(n.size() <= targetPrims)
 		{
 			nodes = n;
-		//	cout << "[L " << n.size() << "]";
+			cout << "[L " << n.size() << "]";
 		}
 		else
 		{
 			aabb* chb = SubdivideAABB(b);
-		//	cout << "[N ";
+			cout << "[N ";
 			for(int i = 0; i < 8; ++i)
 			{
 				nodes.push_back(new OctreeNode(chb[i], n, depth-1, targetPrims));
 			}
-		//	cout << "]";
+			cout << "]";
 		}
 	}
 
