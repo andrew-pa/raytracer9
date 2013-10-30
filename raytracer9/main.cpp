@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	for(int i = 0; i < 8; ++i)
 		prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
 	auto tmbt = (double)clock();
-	prims.push_back(new TriangleMesh("tritest.obj", matrix_idenity(), 4, 4));
+	prims.push_back(new TriangleMesh("bunny.obj", matrix_idenity(), 8, 48));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
@@ -107,6 +107,6 @@ int main(int argc, char* argv[])
 	fnm << "img" << time(nullptr) << ".bmp";
 	tex.SaveToBMP(fnm.str().c_str());
 
-	getchar();
+	//getchar();
 	return 0;
 }
