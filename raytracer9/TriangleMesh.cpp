@@ -6,7 +6,11 @@
 namespace raytracer9
 {
 	TriangleMesh::TriangleMesh(const vector<vertex>& v,
-		const vector<uint>& i, const matrix4x4& w, int octree_depth, uint octree_primTarget)
+		const vector<uint>& i, const matrix4x4& w
+#ifdef TRIMESH_TREE_OCTREE
+		, int octree_depth, uint octree_primTarget
+#endif
+		)
 		: vertices(v), indices(i), _world(w), _inv_world(matrix_inverse(w))
 	{
 		aabb bnds; 
@@ -18,7 +22,12 @@ namespace raytracer9
 			bnds.AddPoint(vertices[indices[ix+2]].pos);
 			ts.push_back(new Triangle(indices[ix], indices[ix+1], indices[ix+2], this));
 		}
+#ifdef TRIMESH_TREE_BVH
+		_tree = new BVHNode(ts);
+#endif
+#ifdef TRIMESH_TREE_OCTREE
 		_tree = new OctreeNode(bnds, ts, octree_depth, octree_primTarget);
+#endif
 	}
 
 	struct ovt
@@ -55,8 +64,11 @@ namespace raytracer9
 		return vec3(x, y, z);
 	}
 
-	TriangleMesh::TriangleMesh(const string& obj_file, const matrix4x4& w,
-		int octree_depth, uint octree_primTarget)
+	TriangleMesh::TriangleMesh(const string& obj_file, const matrix4x4& w
+#ifdef TRIMESH_TREE_OCTREE
+		,int octree_depth, uint octree_primTarget
+#endif
+		)
 		: _world(w), _inv_world(matrix_inverse(w))
 	{
 #pragma region Load OBJ
@@ -132,7 +144,12 @@ namespace raytracer9
 		{
 			ts.push_back(new Triangle(indices[ix], indices[ix+1], indices[ix+2], this));
 		}
+#ifdef TRIMESH_TREE_BVH
+		_tree = new BVHNode(ts);
+#endif
+#ifdef TRIMESH_TREE_OCTREE
 		_tree = new OctreeNode(bnds, ts, octree_depth, octree_primTarget);
+#endif
 	}
 
 	
@@ -173,6 +190,7 @@ namespace raytracer9
 			hr.pos = r.e + r.d*nt;
 			return true;
 		}
+		return false;
 	}
 
 	bool TriangleMesh::hit(const ray& r, hitrecord& hr)

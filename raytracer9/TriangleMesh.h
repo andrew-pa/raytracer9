@@ -3,9 +3,17 @@
 #include "Math.h"
 #include "Primitive.h"
 #include "Octree.h"
+#include "BVHTree.h"
 
 namespace raytracer9
 {
+#define TRIMESH_TREE_BVH
+//#define TRIMESH_TREE_OCTREE
+
+#define TREE_TYPE BVHNode
+//#define TREE_TYPE OctreeNode
+#define TREE_PARAMS
+//#define TREE_PARAMS ,int octree_depth = 16, uint octree_primTarget = 4
 	class TriangleMesh : public Primitive
 	{
 	public:
@@ -19,7 +27,7 @@ namespace raytracer9
 				: pos(p), norm(n), texc(t) { }
 		};
 	protected:
-		OctreeNode* _tree;
+		TREE_TYPE* _tree;
 		matrix4x4 _world;
 		matrix4x4 _inv_world;
 		
@@ -77,17 +85,16 @@ namespace raytracer9
 			}
 		};
 
-		TriangleMesh(const vector<vertex>& v, const vector<uint>& i, const matrix4x4& w = matrix_idenity(),
-			int octree_depth = 16, uint octree_primTarget = 4);
-		TriangleMesh(const string& obj_file, const matrix4x4& w = matrix_idenity(),
-			int octree_depth = 16, uint octree_primTarget = 4);
+		TriangleMesh(const vector<vertex>& v, const vector<uint>& i, 
+			const matrix4x4& w = matrix_idenity() TREE_PARAMS);
+		TriangleMesh(const string& obj_file, const matrix4x4& w = matrix_idenity() TREE_PARAMS);
 		
 
 		bool hitTriangle(uint i0, uint i1, uint i2, const ray& r, hitrecord& hr);
 
 		bool hit(const ray& r, hitrecord& hr) override;
 
-		inline OctreeNode*& tree() { return _tree; }
+		inline TREE_TYPE*& tree() { return _tree; }
 		inline const matrix4x4& world() { return _world; }
 		inline void world(const matrix4x4& w) { _world = w; _inv_world = matrix_inverse(w); }
 

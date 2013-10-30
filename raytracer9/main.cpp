@@ -45,6 +45,7 @@ public:
 int main(int argc, char* argv[])
 {
 	DisplayTexture2D tex(320, 240);
+	
 	Camera cam(vec3(0, 5, -10), vec3(0), tex.Width(), tex.Height());
 
 	CheckerTexture ctx(vec3(0, 1, 0), vec3(1, 1, 0));
@@ -53,7 +54,7 @@ int main(int argc, char* argv[])
 	for(int i = 0; i < 8; ++i)
 		prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
 	auto tmbt = (double)clock();
-	prims.push_back(new TriangleMesh("tritest.obj", matrix_idenity(), 8, 48));
+	prims.push_back(new TriangleMesh("tritest.obj", matrix_idenity()));//, 8, 48));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
