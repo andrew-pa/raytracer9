@@ -34,6 +34,7 @@ namespace raytracer9
 			_left = new BVHNode(left_half, (Axis)( ((uint)axi + 1) % 3 ));
 			_right = new BVHNode(right_half, (Axis)(((uint)axi + 1) % 3));
 			_bounds = aabb(_left->bounds(), _right->bounds());
+			//cout << _bounds.Area() << endl;
 		}
 	}
 
@@ -70,7 +71,6 @@ namespace raytracer9
 				hr = rhr;
 				return true;
 			}
-			return false;
 		}
 		return false;
 	}

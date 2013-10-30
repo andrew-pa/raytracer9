@@ -7,13 +7,13 @@
 
 namespace raytracer9
 {
-#define TRIMESH_TREE_BVH
-//#define TRIMESH_TREE_OCTREE
+//#define TRIMESH_TREE_BVH
+#define TRIMESH_TREE_OCTREE
 
-#define TREE_TYPE BVHNode
-//#define TREE_TYPE OctreeNode
-#define TREE_PARAMS
-//#define TREE_PARAMS ,int octree_depth = 16, uint octree_primTarget = 4
+//#define TREE_TYPE BVHNode
+#define TREE_TYPE OctreeNode
+//#define TREE_PARAMS
+#define TREE_PARAMS ,int octree_depth = 16, uint octree_primTarget = 4
 	class TriangleMesh : public Primitive
 	{
 	public:

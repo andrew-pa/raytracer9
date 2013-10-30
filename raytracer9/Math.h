@@ -283,6 +283,12 @@
 			return max_comp(Max - Center());
 		}
 
+		inline float Area()
+		{
+			vec3 ex = Max - Min;
+			return ex.x * ex.y * ex.z;
+		}
+
 		inline aabb& Enlarge(float s)
 		{
 			Min = Min*s;
