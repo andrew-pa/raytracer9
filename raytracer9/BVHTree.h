@@ -14,7 +14,11 @@ namespace raytracer9
 		BVHNode(Primitive* l, Primitive* r)
 			: _left(l), _right(r), _bounds(l->bounds(), r->bounds()) { }
 		BVHNode(vector<Primitive*>& objs, Axis axi = Axis::X);
-		bool hit(const ray& r, hitrecord& hr) override;
+		bool hit(const ray& r, hitrecord& hr) override
+		{
+			return false;
+		}
+
 		aabb bounds() const override
 		{
 			return _bounds;

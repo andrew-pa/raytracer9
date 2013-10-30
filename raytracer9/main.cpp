@@ -8,6 +8,7 @@ using namespace raytracer9;
 
 #include "Primitive.h"
 #include "Octree.h"
+#include "BVHTree.h"
 #include "TriangleMesh.h"
 
 #include <PixelToaster.h>
@@ -52,12 +53,12 @@ int main(int argc, char* argv[])
 	for(int i = 0; i < 8; ++i)
 		prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
 	auto tmbt = (double)clock();
-	prims.push_back(new TriangleMesh("bunny.obj", matrix_idenity(), 8, 48));
+	prims.push_back(new TriangleMesh("tritest.obj", matrix_idenity(), 8, 48));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
-	OctreeNode ot = OctreeNode(aabb(vec3(-10), vec3(10)), prims, 16);
-
+	//OctreeNode ot = OctreeNode(aabb(vec3(-10), vec3(10)), prims, 16);
+	BVHNode ot = BVHNode(prims);
 	Sphere s(vec3(0,0,0), 1);
 
 	double avg_render_time = 0.0f;
