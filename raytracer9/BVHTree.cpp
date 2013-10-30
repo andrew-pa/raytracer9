@@ -1,11 +1,10 @@
 #include "BVHTree.h"
 
 
-BVHNode::BVHNode()
+namespace raytracer9
 {
-}
+	BVHNode::BVHNode(vector<Primitive*>& objs, Axis axi)
+	{
 
-
-BVHNode::~BVHNode()
-{
-}
+	}
+};

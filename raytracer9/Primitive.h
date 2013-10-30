@@ -26,8 +26,14 @@ class Primitive
 public:
 	virtual bool hit(const ray& r, hitrecord& hr) = 0;
 	virtual aabb bounds() const = 0;
-	virtual vec3 center() = 0;
-	virtual bool containedBy(const aabb& b) = 0;
+	virtual vec3 center()
+	{
+		return bounds().Center();
+	}
+	virtual bool containedBy(const aabb& b)
+	{
+		return bounds().Inside(b);
+	}
 	virtual bool intersects(const aabb& b)
 	{
 		return bounds().Inside(b);
