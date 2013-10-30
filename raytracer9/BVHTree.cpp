@@ -36,4 +36,42 @@ namespace raytracer9
 			_bounds = aabb(_left->bounds(), _right->bounds());
 		}
 	}
+
+	bool BVHNode::hit(const ray& r, hitrecord& hr)
+	{
+		if (!_bounds.Hit(r)) return false;
+		hitrecord lhr, rhr;
+		lhr.t = hr.t;
+		rhr.t = hr.t;
+		bool lh = (_left != nullptr ? _left->hit(r, lhr) : false);
+		bool rh = (_right != nullptr ? _right->hit(r, rhr) : false);
+		if (lh && rh)
+		{
+			if (lhr.t < rhr.t)
+			{
+				hr = lhr;
+				return true;
+			}
+			else
+			{
+				hr = rhr;
+				return true;
+			}
+		}
+		else
+		{
+			if (lh && !rh)
+			{
+				hr = lhr;
+				return true;
+			}
+			else if(!lh && rh)
+			{
+				hr = rhr;
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
 };
