@@ -41,6 +41,7 @@ namespace raytracer9
 			//indices into vertex array, not the index array!
 			uint i0, i1, i2;
 			aabb _b;
+			vec3 _center;
 
 			Triangle(uint _0, uint _1, uint _2, TriangleMesh* m)
 				: i0(_0), i1(_1), i2(_2), mesh(m) 
@@ -49,6 +50,11 @@ namespace raytracer9
 				_b.AddPoint(mesh->vertices[i2].pos);
 				_b.AddPoint(mesh->vertices[i1].pos);
 				_b.AddPoint(mesh->vertices[i0].pos);
+
+
+				const float _1over3 = 1.f / 3.f;
+				_center = _1over3 * (mesh->vertices[i0].pos +
+					mesh->vertices[i1].pos + mesh->vertices[i2].pos);
 				
 			//	vec3 ext = _b.Max - _b.Center();
 			//	cout << "ext = " << ext.x << ", " << ext.y << ", " << ext.z << " area = " << _b.Area() << endl;
@@ -64,9 +70,7 @@ namespace raytracer9
 
 			inline vec3 center() override
 			{
-				const float _1over3 = 1.f / 3.f;
-				return _1over3 * (mesh->vertices[i0].pos + 
-					mesh->vertices[i1].pos + mesh->vertices[i2].pos);
+				return _center;
 			}
 
 			inline bool hit(const ray& r, hitrecord& hr) override
