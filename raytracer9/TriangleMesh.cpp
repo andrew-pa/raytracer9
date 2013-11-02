@@ -174,7 +174,8 @@ namespace raytracer9
 		vec3 e2 = v2 - v0;
 		vec3 pv = r.d.cross(e2);
 		float det = e1.dot(pv);
-		if(det < -FLT_EPSILON || det < FLT_EPSILON)//if(det == 0)
+		if(det < -FLT_EPSILON || det < FLT_EPSILON)
+		//if(det == 0)
 			return false;
 		float idet = 1.f / det;
 		vec3 tv = r.e - v0;

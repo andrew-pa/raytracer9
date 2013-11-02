@@ -263,7 +263,17 @@
 			: Min(), Max() { }
 
 		aabb(vec3 m, vec3 x)
-			: Min(m), Max(x) { }
+			: Min(m), Max(x) 
+		{
+			if (Min.x > Max.x || Max.x < Min.x)
+				throw;
+
+			if (Min.y > Max.y || Max.y < Min.y)
+				throw;
+
+			if (Min.z > Max.z || Max.z < Min.z)
+				throw;
+		}
 		aabb(aabb a, aabb b)
 			: Min(min(a.Min, b.Min)),
 			  Max(max(a.Max, b.Max))
@@ -364,7 +374,7 @@
 		inline bool Hit(ray r) const
 		{
 			if(r.e > Min && r.e < Max) return true;
-
+			return true;
 #ifdef FASTAABB
 			vec3 rrd = recip(r.d);
 			float tx1 = (Min.x - r.e.x)*rrd.x;

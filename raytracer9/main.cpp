@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 	//for(int i = 0; i < 8; ++i)
 	//	prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
 	auto tmbt = (double)clock();
-	prims.push_back(new TriangleMesh("tritest.obj", matrix_idenity()));// , 8, 48));
+	prims.push_back(new TriangleMesh("tri.obj", matrix_idenity()));// , 8, 48));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
 	t += (et - st)/(float)CLOCKS_PER_SEC;//0.016f;
 	cam.lookAt(vec3(
 		10 * sin(tex.mouseCoords().x*PI*2), 
-		80 * sin(tex.mouseCoords().y), 
+		40 * sin(tex.mouseCoords().y*PI), 
 		10 * cos(tex.mouseCoords().x*PI*2)), vec3(0));
 	ctx.Color1.z = sin(t*.5f);
 	ctx.Color2.y = 1-sin(t*.5f);
