@@ -17,6 +17,7 @@ class DisplayTexture2D : public Texture2D, public PixelToaster::Listener
 	PixelToaster::Display* display;
 	vector<PixelToaster::Pixel> pxs;
 	vec2 mc;
+	vec2 dmc;
 public:
 	DisplayTexture2D(float w, float h)
 		: Texture2D(w, h),
@@ -44,11 +45,15 @@ public:
 	inline PixelToaster::Display* Display() { return display; }
 
 	inline vec2 mouseCoords() {	return mc; }
+	inline vec2 deltaMouseCoords() { return dmc; }
 
 	void onMouseMove(PixelToaster::DisplayInterface&, PixelToaster::Mouse m) override
 	{
+		static vec2 lmc;
 		mc.x = m.x/display->width();
 		mc.y = m.y/display->height();
+		dmc = mc - lmc;
+		lmc = mc;
 	}
 };
 
@@ -62,10 +67,10 @@ int main(int argc, char* argv[])
 	//Texture2D ctx("tex.bmp");
 
 	vector<Primitive*> prims;
-	//for(int i = 0; i < 8; ++i)
+	//for(int i = 0; i < 16; ++i)
 	//	prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
 	auto tmbt = (double)clock();
-	prims.push_back(new TriangleMesh("tri.obj", matrix_idenity()));// , 8, 48));
+	prims.push_back(new TriangleMesh("teapot.obj", matrix_idenity()));// , 8, 48));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
@@ -74,6 +79,9 @@ int main(int argc, char* argv[])
 
 	double avg_render_time = 0.0f;
 	uint render_count = 0;
+
+	float camTheta = 0.f;
+	float camPhi = 0.f;
 
 	float t = 0.f;
 	while(tex.Display()->open())
@@ -89,12 +97,12 @@ int main(int argc, char* argv[])
 			hr.t = 1000000;
 			if(ot.hit(r, hr))
 			{
-				float d = .8f;// __max(0, hr.norm.dot(vec3(.4f, .6f, 0)));
+				float d = __max(0, hr.norm.dot(vec3(.4f, .6f, 0)));
 				tex.Pixel(x, y) = d*ctx.Texel(hr.textureCoord);
 			}
 			else
 			{
-				tex.Pixel(x, y) = vec3(0, .3f, .3f) + (r.d.dot(vec3(0, 1, 0))*vec3(0, 0.4f, 1));
+				tex.Pixel(x, y) = vec3(0, .0f, .3f) + (r.d.dot(vec3(0, 1, 0))*vec3(0, 0.4f, 1));
 			}
 		}
 		//tex.Update();
@@ -108,10 +116,14 @@ int main(int argc, char* argv[])
 	render_count++;
 	tex.Update();
 	t += (et - st)/(float)CLOCKS_PER_SEC;//0.016f;
+
+	camTheta += tex.deltaMouseCoords().x*4;
+	camPhi += -tex.deltaMouseCoords().y*4;
+
 	cam.lookAt(vec3(
-		10 * sin(tex.mouseCoords().x*PI*2), 
-		40 * sin(tex.mouseCoords().y*PI), 
-		10 * cos(tex.mouseCoords().x*PI*2)), vec3(0));
+		10 * sinf(camPhi) * cosf(camTheta), 
+		10 * cosf(camPhi), 
+		10 * sinf(camPhi) * sinf(camTheta)  ), vec3(0));
 	ctx.Color1.z = sin(t*.5f);
 	ctx.Color2.y = 1-sin(t*.5f);
 	}

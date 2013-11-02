@@ -192,7 +192,7 @@ namespace raytracer9
 			hr.t = nt;
 			float w = 1-(u+v);
 			hr.norm = vertices[i0].norm * w + vertices[i1].norm * u + vertices[i2].norm*v;
-			hr.textureCoord = vertices[i0].texc*w + vertices[i1].texc*u + vertices[i2].texc*v;
+			hr.textureCoord = vertices[i0].texc*w + vertices[i1].texc*v + vertices[i2].texc*u;
 			hr.p = this;
 			hr.pos = r.e + r.d*nt;
 			return true;

@@ -49,7 +49,10 @@ namespace raytracer9
 				_b.AddPoint(mesh->vertices[i2].pos);
 				_b.AddPoint(mesh->vertices[i1].pos);
 				_b.AddPoint(mesh->vertices[i0].pos);
-
+				
+			//	vec3 ext = _b.Max - _b.Center();
+			//	cout << "ext = " << ext.x << ", " << ext.y << ", " << ext.z << " area = " << _b.Area() << endl;
+				
 				//_b = aabb(min(mesh->vertices[i0].pos, min(mesh->vertices[i1].pos, mesh->vertices[i2].pos)),
 				//	max(mesh->vertices[i0].pos, max(mesh->vertices[i1].pos, mesh->vertices[i2].pos)));
 			}

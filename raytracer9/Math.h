@@ -230,6 +230,10 @@
 	{
 		return vec2(a.x+b.x, a.y+b.y);
 	}
+	inline vec2 operator -(vec2 a, vec2 b)
+	{
+		return vec2(a.x - b.x, a.y - b.y);
+	}
 
 	inline vec2 operator *(vec2 a, float b)
 	{
@@ -265,19 +269,25 @@
 		aabb(vec3 m, vec3 x)
 			: Min(m), Max(x) 
 		{
-			if (Min.x > Max.x || Max.x < Min.x)
-				throw;
+			//if (Min.x > Max.x || Max.x < Min.x)
+			//	throw;
 
-			if (Min.y > Max.y || Max.y < Min.y)
-				throw;
+			//if (Min.y > Max.y || Max.y < Min.y)
+			//	throw;
 
-			if (Min.z > Max.z || Max.z < Min.z)
-				throw;
+			//if (Min.z > Max.z || Max.z < Min.z)
+			//	throw;
 		}
 		aabb(aabb a, aabb b)
-			: Min(min(a.Min, b.Min)),
-			  Max(max(a.Max, b.Max))
-		{ }
+			: Min(), Max()
+		{
+			AddPoint(a.Min);
+			AddPoint(a.Max);
+			AddPoint(b.Min);
+			AddPoint(b.Max);
+		//	if (!Inside(a) || !Inside(b))
+			//	throw;
+		}
 		aabb(vec3 center, float ext)
 		{
 			Min = center - vec3(ext);
@@ -295,7 +305,7 @@
 
 		inline float Area()
 		{
-			vec3 ex = Max - Min;
+			vec3 ex = Max - Center();
 			return ex.x * ex.y * ex.z;
 		}
 
@@ -374,9 +384,11 @@
 		inline bool Hit(ray r) const
 		{
 			if(r.e > Min && r.e < Max) return true;
-			return true;
+			// return true;
 #ifdef FASTAABB
+			//see http://tavianator.com/2011/05/fast-branchless-raybounding-box-intersections/
 			vec3 rrd = recip(r.d);
+
 			float tx1 = (Min.x - r.e.x)*rrd.x;
 			float tx2 = (Max.x - r.e.x)*rrd.x;
 
