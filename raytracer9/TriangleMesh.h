@@ -7,13 +7,13 @@
 
 namespace raytracer9
 {
-//#define TRIMESH_TREE_BVH
-#define TRIMESH_TREE_OCTREE
+#define TRIMESH_TREE_BVH
+//#define TRIMESH_TREE_OCTREE
 
-//#define TREE_TYPE BVHNode
-#define TREE_TYPE OctreeNode
-//#define TREE_PARAMS
-#define TREE_PARAMS ,int octree_depth = 16, uint octree_primTarget = 4
+#define TREE_TYPE BVHNode
+//#define TREE_TYPE OctreeNode
+#define TREE_PARAMS
+//#define TREE_PARAMS ,int octree_depth = 16, uint octree_primTarget = 4
 	class TriangleMesh : public Primitive
 	{
 	public:
@@ -45,8 +45,12 @@ namespace raytracer9
 			Triangle(uint _0, uint _1, uint _2, TriangleMesh* m)
 				: i0(_0), i1(_1), i2(_2), mesh(m) 
 			{
-				_b = aabb(min(mesh->vertices[i0].pos, min(mesh->vertices[i1].pos, mesh->vertices[i2].pos)),
-					max(mesh->vertices[i0].pos, max(mesh->vertices[i1].pos, mesh->vertices[i2].pos)));
+				_b = aabb();
+				_b.AddPoint(mesh->vertices[i2].pos);
+				_b.AddPoint(mesh->vertices[i1].pos);
+				_b.AddPoint(mesh->vertices[i0].pos);
+				//_b = aabb(min(mesh->vertices[i0].pos, min(mesh->vertices[i1].pos, mesh->vertices[i2].pos)),
+				//	max(mesh->vertices[i0].pos, max(mesh->vertices[i1].pos, mesh->vertices[i2].pos)));
 			}
 
 			inline aabb bounds() const override
@@ -58,7 +62,7 @@ namespace raytracer9
 			{
 				const float _1over3 = 1.f / 3.f;
 				return _1over3 * (mesh->vertices[i0].pos + 
-					mesh->vertices[i1].pos + mesh->vertices[i1].pos);
+					mesh->vertices[i1].pos + mesh->vertices[i2].pos);
 			}
 
 			inline bool hit(const ray& r, hitrecord& hr) override

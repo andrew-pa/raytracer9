@@ -29,29 +29,6 @@ namespace raytracer9
 		_tree = new OctreeNode(bnds, ts, octree_depth, octree_primTarget);
 #endif
 	}
-
-	struct ovt
-	{
-		int ip, it, in;
-		ovt(int a = 0, int b = 0, int c = 0)
-			: ip(a), it(c), in(b)
-		{
-		}
-
-		bool operator ==(ovt b)
-		{
-			return (ip==b.ip) && (it==b.it) && (in==b.in);
-		}
-		bool operator !=(ovt b)
-		{
-			return ip!=b.ip && it!=b.it && in!=b.in;
-		}
-	};
-	bool operator <(const ovt& a, const ovt& b)
-	{
-		return (a.ip < b.ip) || (a.in < b.in) || (a.it < b.it);
-	}
-
 	bool operator ==(const TriangleMesh::vertex& a, const TriangleMesh::vertex& b)
 	{
 		return a.pos.x == b.pos.x && a.pos.y == b.pos.y && a.pos.z == b.pos.z;	
@@ -152,28 +129,57 @@ namespace raytracer9
 #endif
 	}
 
-	
+//#define GEOMETRIC
 	bool TriangleMesh::hitTriangle(uint i0, uint i1, uint i2, const ray& r, hitrecord& hr)
 	{
-		uint z0 = i0;
-		uint z1 = i1;
-		uint z2 = i2;
-
-		vec3 v0 = vertices[z0].pos;
-		vec3 v1 = vertices[z1].pos;
-		vec3 v2 = vertices[z2].pos;
+		//both from http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-9-ray-triangle-intersection/
+		vec3 v0 = vertices[i0].pos;
+		vec3 v1 = vertices[i1].pos;
+		vec3 v2 = vertices[i2].pos;
+#ifdef GEOMETRIC
+		vec3 v0v1 = v1 - v0;
+		vec3 v0v2 = v2 - v0;
+		vec3 n = v0v1.cross(v0v2); //get normal from vertices instead?
+		float ndr = n.dot(r.d);
+		if (ndr == 0) return false;
+		float d = n.dot(v0);
+		float t = -(n.dot(r.e) + d) / ndr;
+		vec3 ph = r.e + r.d*t;
+		vec3 v0p = ph - v0;
+		float v = n.dot(v0v1.cross(v0p));
+		if(v < 0) return false;
+		vec3 v1p = ph - v1;
+		vec3 v1v2 = v2 - v1;
+		float w = n.dot(v1v2.cross(v1p));
+		if(w < 0) return false;
+		vec3 v2p = ph - v2;
+		vec3 v2v0 = v0 - v2;
+		float u = n.dot(v2v0.cross(v2p));
+		if (u < 0) return false;
+		if (t < hr.t)
+		{
+			hr.t = t;
+			float w = 1-(u+v);
+			hr.norm = vertices[i0].norm * w + vertices[i1].norm * u + vertices[i2].norm*v;
+			hr.textureCoord = vertices[i0].texc*w + vertices[i1].texc*u + vertices[i2].texc*v;
+			hr.p = this;
+			hr.pos = ph;
+			return true;
+		}
+		return false;
+#else
 
 		float u, v;
 		vec3 e1 = v1 - v0;
 		vec3 e2 = v2 - v0;
 		vec3 pv = r.d.cross(e2);
 		float det = e1.dot(pv);
-		if(det == 0)
+		if(det < -FLT_EPSILON || det < FLT_EPSILON)//if(det == 0)
 			return false;
 		float idet = 1.f / det;
 		vec3 tv = r.e - v0;
 		u = tv.dot(pv) * idet;
-		if(u < 0 || u > 1)
+		if(u < 0 || u > 1.0f)
 			return false;
 		vec3 qv = tv.cross(e1);
 		v = r.d.dot(qv) * idet;
@@ -184,13 +190,14 @@ namespace raytracer9
 		{
 			hr.t = nt;
 			float w = 1-(u+v);
-			hr.norm = vertices[z0].norm * w + vertices[z1].norm * u + vertices[z2].norm*v;
-			hr.textureCoord = vertices[z0].texc*w + vertices[z1].texc*u + vertices[z2].texc*v;
+			hr.norm = vertices[i0].norm * w + vertices[i1].norm * u + vertices[i2].norm*v;
+			hr.textureCoord = vertices[i0].texc*w + vertices[i1].texc*u + vertices[i2].texc*v;
 			hr.p = this;
 			hr.pos = r.e + r.d*nt;
 			return true;
 		}
 		return false;
+#endif
 	}
 
 	bool TriangleMesh::hit(const ray& r, hitrecord& hr)

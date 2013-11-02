@@ -12,16 +12,18 @@ using namespace raytracer9;
 #include "TriangleMesh.h"
 
 #include <PixelToaster.h>
-class DisplayTexture2D : public Texture2D
+class DisplayTexture2D : public Texture2D, public PixelToaster::Listener
 {
 	PixelToaster::Display* display;
 	vector<PixelToaster::Pixel> pxs;
+	vec2 mc;
 public:
 	DisplayTexture2D(float w, float h)
 		: Texture2D(w, h),
-		display(new PixelToaster::Display("raytracer9", w, h))
+		display(new PixelToaster::Display("raytracer9", w, h)),
+		mc(0,0)
 	{
-
+		display->listener(this);
 	}
 
 	inline void Update()
@@ -40,6 +42,14 @@ public:
 	}
 
 	inline PixelToaster::Display* Display() { return display; }
+
+	inline vec2 mouseCoords() {	return mc; }
+
+	void onMouseMove(PixelToaster::DisplayInterface&, PixelToaster::Mouse m) override
+	{
+		mc.x = m.x/display->width();
+		mc.y = m.y/display->height();
+	}
 };
 
 int main(int argc, char* argv[])
@@ -49,12 +59,13 @@ int main(int argc, char* argv[])
 	Camera cam(vec3(0, 5, -10), vec3(0), tex.Width(), tex.Height());
 
 	CheckerTexture ctx(vec3(0, 1, 0), vec3(1, 1, 0));
+	//Texture2D ctx("tex.bmp");
 
 	vector<Primitive*> prims;
-	for(int i = 0; i < 8; ++i)
-		prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
+	//for(int i = 0; i < 8; ++i)
+	//	prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
 	auto tmbt = (double)clock();
-	prims.push_back(new TriangleMesh("teapot.obj", matrix_idenity(), 8, 48));
+	prims.push_back(new TriangleMesh("tritest.obj", matrix_idenity()));// , 8, 48));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
@@ -78,7 +89,7 @@ int main(int argc, char* argv[])
 			hr.t = 1000000;
 			if(ot.hit(r, hr))
 			{
-				float d = __max(0, hr.norm.dot(vec3(.4f, .6f, 0)));
+				float d = .8f;// __max(0, hr.norm.dot(vec3(.4f, .6f, 0)));
 				tex.Pixel(x, y) = d*ctx.Texel(hr.textureCoord);
 			}
 			else
@@ -92,11 +103,15 @@ int main(int argc, char* argv[])
 	auto et = (double)clock();
 
 	cout << "Render took " << (et - st) << " clocks (" << (et - st)/(double)CLOCKS_PER_SEC << " seconds)" << endl;
+	//cout << tex.mouseCoords().x << " " << tex.mouseCoords().y << endl;
 	avg_render_time += (et - st);
 	render_count++;
 	tex.Update();
 	t += (et - st)/(float)CLOCKS_PER_SEC;//0.016f;
-	cam.lookAt(vec3(10*sin(t), 5*sin(t), 10*cos(t)), vec3(0));
+	cam.lookAt(vec3(
+		10 * sin(tex.mouseCoords().x*PI*2), 
+		80 * sin(tex.mouseCoords().y), 
+		10 * cos(tex.mouseCoords().x*PI*2)), vec3(0));
 	ctx.Color1.z = sin(t*.5f);
 	ctx.Color2.y = 1-sin(t*.5f);
 	}

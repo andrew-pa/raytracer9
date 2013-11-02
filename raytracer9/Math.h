@@ -52,8 +52,8 @@
 		vec3 cross(vec3 b) const
 		{
 			return vec3((y * b.z) - (z * b.y),
-							(z * b.x) - (x * b.z),
-							(x * b.y) - (y * b.x));
+						(z * b.x) - (x * b.z),
+						(x * b.y) - (y * b.x));
 		}
 
 		inline float sqrlength() const
