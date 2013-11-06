@@ -38,8 +38,8 @@ namespace raytracer9
 			auto right_half = vector<Primitive*>(objs.begin() + half, objs.end());
 			//log << "[" << objs.size() << " " << half << " " << left_half.size() << ", " << right_half.size() << "]" << endl;
 			//log << "[N (" << left_half.size() << ":" << right_half.size() << ") " << endl << "\t";
-			_left = new BVHNode(left_half, (Axis)( ((uint)axi + 1) % 3 ));
-			_right = new BVHNode(right_half, (Axis)(((uint)axi + 1) % 3));
+			_left = new BVHNode(left_half, (Axis)( ((uint)axi + rand()) % 3 ));
+			_right = new BVHNode(right_half, (Axis)(((uint)axi + rand()) % 3));
 			//log << "\t" << endl << "]";
 			_bounds = aabb(_left->bounds(), _right->bounds());
 			//cout << _bounds.Area() << endl;

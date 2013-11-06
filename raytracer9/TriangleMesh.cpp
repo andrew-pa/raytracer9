@@ -139,7 +139,7 @@ namespace raytracer9
 #ifdef GEOMETRIC
 		vec3 v0v1 = v1 - v0;
 		vec3 v0v2 = v2 - v0;
-		vec3 n = v0v1.cross(v0v2); //get normal from vertices instead?
+		vec3 n = v0v1.cross(v0v2); //get normal from vertices instead? 
 		float ndr = n.dot(r.d);
 		if (ndr == 0) return false;
 		float d = n.dot(v0);
@@ -174,8 +174,8 @@ namespace raytracer9
 		vec3 e2 = v2 - v0;
 		vec3 pv = r.d.cross(e2);
 		float det = e1.dot(pv);
-		if(det < -FLT_EPSILON || det < FLT_EPSILON)
-		//if(det == 0)
+		//if(det < -FLT_EPSILON || det < FLT_EPSILON)
+		if(det == 0)
 			return false;
 		float idet = 1.f / det;
 		vec3 tv = r.e - v0;
@@ -204,7 +204,7 @@ namespace raytracer9
 	bool TriangleMesh::hit(const ray& r, hitrecord& hr)
 	{
 		ray rd = ray(_inv_world.transform(r.e), norm(_inv_world.transform(r.d, 0)));
-		if(_tree->hit(r, hr))
+		if(_tree->hit(rd, hr))
 		{
 			hr.norm = matrix_tranpose(_inv_world).transform(hr.norm, 0);
 			return true;

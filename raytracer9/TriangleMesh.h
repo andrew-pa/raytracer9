@@ -112,15 +112,15 @@ namespace raytracer9
 
 		inline aabb bounds() const override
 		{
-			return _tree->bounds();
+			return _world.transform(_tree->bounds());
 		}
 		inline vec3 center() override
 		{
-			return _tree->center();
+			return _world.transform(_tree->center());
 		}
 		inline bool containedBy(const aabb& b) override
 		{
-			return _tree->bounds().Inside(b);
+			return _tree->bounds().Inside(_inv_world.transform(b));
 		}
 	};
 };
