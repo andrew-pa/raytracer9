@@ -206,6 +206,25 @@
 		return vec3(1.f/v.x, 1.f/v.y, 1.f/v.z);
 	}
 
+	inline void make_orthonormal_frame(vec3& w, vec3& u, vec3& v)
+	{
+		w = norm(w);
+		vec3 t = w;
+		int i;
+		float x = 0.f;
+		int z;
+		for (i = 0; i < 3; ++i)
+		{
+			if (x < abs(t[i])) 
+			{
+				x = abs(t[i]); z = i;
+			}
+		}
+		t[z] = 1;
+		u = norm(t.cross(w));
+		v = w.cross(u);
+	}
+
 #pragma endregion
 #pragma endregion
 

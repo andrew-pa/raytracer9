@@ -25,8 +25,9 @@ namespace raytracer9
 	{
 	public:
 		vec3 diffuse;
-		material(vec3 d)
-			: diffuse(d) { }
+		vec3 emit;
+		material(vec3 d, vec3 e)
+			: diffuse(d), emit(e) { }
 	};
 
 	class Primitive
@@ -66,8 +67,8 @@ namespace raytracer9
 			return vec2(u, v);
 		}
 	public:
-		Sphere(vec3 c, float r)
-			: _c(c), _r(r) { }
+		Sphere(vec3 c, float r, material* _m)
+			: _c(c), _r(r), m(_m) { }
 
 		bool hit(const ray& r, hitrecord& hr) override
 		{

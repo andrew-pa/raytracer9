@@ -60,16 +60,33 @@ public:
 
 BVHNode* scenetree;
 
-vec3 raycolor(const ray& r, hitrecord& hr)
+vec3 cosdistrib(vec3 n)
 {
+	vec3 w = n;
+	vec3 u, v;
+	make_orthonormal_frame(w, u, v);
+	float e1 = randf();
+	float e2 = randf();
+	float se2 = sqrtf(e2);
+	float t2e = 2 * PI* e1;
+	return (cosf(t2e)*se2*u) +
+		(sinf(t2e)*se2*v) +
+		(sqrtf(1 - e2)*w);
+}
+
+vec3 raycolor(const ray& r, hitrecord& hr, int depth = 0)
+{
+	if (depth > 16) return vec3(0, 0, 0);
 	if (scenetree->hit(r, hr))
 	{
-		return vec3(1, 1, 1);
+		if (hr.p->mat()->emit.sqrlength() > 0) return hr.p->mat()->emit;
+		vec3 rd = cosdistrib(hr.norm);
+		return hr.p->mat()->emit + (hr.p->mat()->diffuse * raycolor(ray(hr.pos, rd), hr, depth+1));
 	}
 	else
 	{
-		vec3 v = vec3(.3f, .3f, .6f) + (r.d.dot(vec3(0, 1, 0))*vec3(0, 0.3f, 1));
-		v.x = 0;
+		vec3 v = vec3(0.6f, 0.6f, 0.6f);// +(r.d.dot(vec3(0, 1, 0))*vec3(0, 0.3f, 1));
+		//v.x = 0;
 		return v;
 	}
 }
@@ -90,11 +107,11 @@ int main(int argc, char* argv[])
 	//	prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
 	auto tmbt = (double)clock();
 	for(int i = 0; i < 16; ++i)
-		prims.push_back(new TriangleMesh("ship.obj", 
+		prims.push_back(new TriangleMesh("tri.obj", new material(vec3(randfn(), randfn(), randfn()), vec3((rand() % 8 != 0 ? 0 : 1))),
 			matrix_rotation_x(randfn()*2*PI) * 
 			matrix_rotation_y(randfn()*2*PI) *
 			matrix_rotation_z(randfn()*2*PI) * 
-			matrix_translate(vec3(randfn() * 16, randfn() * 16, randfn()*16))));// , 8, 48));
+			matrix_translate(vec3(randfn() * 8, randfn() * 8, randfn()*8))));// , 8, 48));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
@@ -121,9 +138,9 @@ int main(int argc, char* argv[])
 		{
 			for(x = 0; x < tex.Width(); ++x)
 			{
-				r = cam.generateRay(x, y);
+				r = cam.generateRay(x + randfn()*.1f, y + randfn()*.1f);
 				hr.t = 1000000;
-				tex.Pixel(x, y) = raycolor(r, hr);
+				tex.Pixel(x, y) = (tex.Pixel(x,y) + raycolor(r, hr)) * .5f;
 				/*if(ot.hit(r, hr))
 				{
 					float d = __max(0, hr.norm.dot(vec3(.4f, .6f, 0))) + 0.1f;
@@ -146,15 +163,15 @@ int main(int argc, char* argv[])
 	tex.Update();
 	t += (et - st)/(float)CLOCKS_PER_SEC;//0.016f;
 
-	if(tex.deltaMouseCoords().x != 0)
-		camTheta -= tex.deltaMouseCoords().x*4;
-	if(tex.deltaMouseCoords().y != 0)
-		camPhi -= tex.deltaMouseCoords().y*4;
+	//if(tex.deltaMouseCoords().x != 0)
+	//	camTheta -= tex.deltaMouseCoords().x*4;
+	//if(tex.deltaMouseCoords().y != 0)
+	//	camPhi -= tex.deltaMouseCoords().y*4;
 
-	cam.lookAt(vec3(
-		20 * sinf(camPhi) * cosf(camTheta), 
-		20 * cosf(camPhi), 
-		20 * sinf(camPhi) * sinf(camTheta)  ), vec3(0));
+	//cam.lookAt(vec3(
+	//	20 * sinf(camPhi) * cosf(camTheta), 
+	//	20 * cosf(camPhi), 
+	//	20 * sinf(camPhi) * sinf(camTheta)  ), vec3(0));
 	//ctx.Color1.z = sin(t*.5f);
 	//ctx.Color2.y = 1-sin(t*.5f);
 	}
