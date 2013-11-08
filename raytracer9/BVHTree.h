@@ -22,6 +22,8 @@ namespace raytracer9
 		}
 		inline const Primitive* left() const { return _left;  }
 		inline const Primitive* right() const { return _right; }
+
+		inline material*& mat() { throw exception("BVHTree has no material"); }
 	};
 }
 

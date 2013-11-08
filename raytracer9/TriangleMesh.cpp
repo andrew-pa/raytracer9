@@ -6,12 +6,12 @@
 namespace raytracer9
 {
 	TriangleMesh::TriangleMesh(const vector<vertex>& v,
-		const vector<uint>& i, const matrix4x4& w
+		const vector<uint>& i, material* _m, const matrix4x4& w
 #ifdef TRIMESH_TREE_OCTREE
 		, int octree_depth, uint octree_primTarget
 #endif
 		)
-		: vertices(v), indices(i), _world(w), _inv_world(matrix_inverse(w))
+		: vertices(v), indices(i), _world(w), _inv_world(matrix_inverse(w)), m(_m)
 	{
 		aabb bnds; 
 		vector<Primitive*> ts;
@@ -41,12 +41,12 @@ namespace raytracer9
 		return vec3(x, y, z);
 	}
 
-	TriangleMesh::TriangleMesh(const string& obj_file, const matrix4x4& w
+	TriangleMesh::TriangleMesh(const string& obj_file, material* _m, const matrix4x4& w
 #ifdef TRIMESH_TREE_OCTREE
 		,int octree_depth, uint octree_primTarget
 #endif
 		)
-		: _world(w), _inv_world(matrix_inverse(w))
+		: _world(w), _inv_world(matrix_inverse(w)), m(_m)
 	{
 #pragma region Load OBJ
 		vector<vec3> poss;

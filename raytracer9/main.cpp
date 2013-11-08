@@ -58,6 +58,23 @@ public:
 	}
 };
 
+BVHNode* scenetree;
+
+vec3 raycolor(const ray& r, hitrecord& hr)
+{
+	if (scenetree->hit(r, hr))
+	{
+		return vec3(1, 1, 1);
+	}
+	else
+	{
+		vec3 v = vec3(.3f, .3f, .6f) + (r.d.dot(vec3(0, 1, 0))*vec3(0, 0.3f, 1));
+		v.x = 0;
+		return v;
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
 	srand(time(nullptr));
@@ -82,7 +99,7 @@ int main(int argc, char* argv[])
 	tmbt = ltmbt - tmbt;
 	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
 	//OctreeNode ot = OctreeNode(aabb(vec3(-10), vec3(10)), prims, 16);
-	BVHNode ot = BVHNode(prims);
+	scenetree = new BVHNode(prims);
 
 	double avg_render_time = 0.0f;
 	uint render_count = 0;
@@ -106,7 +123,8 @@ int main(int argc, char* argv[])
 			{
 				r = cam.generateRay(x, y);
 				hr.t = 1000000;
-				if(ot.hit(r, hr))
+				tex.Pixel(x, y) = raycolor(r, hr);
+				/*if(ot.hit(r, hr))
 				{
 					float d = __max(0, hr.norm.dot(vec3(.4f, .6f, 0))) + 0.1f;
 					tex.Pixel(x, y) = d*ctx.Texel(hr.textureCoord);
@@ -114,7 +132,7 @@ int main(int argc, char* argv[])
 				else
 				{
 					tex.Pixel(x, y) = vec3(0, .0f, .3f) + (r.d.dot(vec3(0, 1, 0))*vec3(0, 0.4f, 1));
-				}
+				}*/
 		}
 		//tex.Update();
 	}

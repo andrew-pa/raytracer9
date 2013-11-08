@@ -33,6 +33,8 @@ namespace raytracer9
 		
 		vector<vertex> vertices;
 		vector<uint> indices;
+
+		material* m;
 	public:
 		class Triangle : public Primitive
 		{
@@ -95,11 +97,12 @@ namespace raytracer9
 
 				return b.intersects(v0, v1) || b.intersects(v0, v2) || b.intersects(v1, v2);
 			}
+			inline material*& mat() { return mesh->mat(); }
 		};
 
-		TriangleMesh(const vector<vertex>& v, const vector<uint>& i, 
+		TriangleMesh(const vector<vertex>& v, const vector<uint>& i, material* _m, 
 			const matrix4x4& w = matrix_idenity() TREE_PARAMS);
-		TriangleMesh(const string& obj_file, const matrix4x4& w = matrix_idenity() TREE_PARAMS);
+		TriangleMesh(const string& obj_file, material* _m, const matrix4x4& w = matrix_idenity() TREE_PARAMS);
 		
 
 		bool hitTriangle(uint i0, uint i1, uint i2, const ray& r, hitrecord& hr);
@@ -122,6 +125,7 @@ namespace raytracer9
 		{
 			return _tree->bounds().Inside(_inv_world.transform(b));
 		}
+		inline material*& mat() { return m; }
 	};
 };
 
