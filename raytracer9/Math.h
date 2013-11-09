@@ -211,11 +211,11 @@
 		w = norm(w);
 		vec3 t = w;
 		int i;
-		float x = 0.f;
-		int z;
-		for (i = 0; i < 3; ++i)
+		float x = abs(t.x);
+		int z = 0;
+		for (i = 1; i < 3; ++i)
 		{
-			if (x < abs(t[i])) 
+			if (x > abs(t[i])) 
 			{
 				x = abs(t[i]); z = i;
 			}
@@ -741,6 +741,14 @@
 						 sinf(z),  cosf(z), 0, 0, 
 						 0,		   0,       1, 0,
 						 0,        0,       0, 1);
+	}
+
+	inline matrix4x4 matrix_scale(vec3 s)
+	{
+		return matrix4x4(s.x, 0, 0, 0,
+						0, s.y, 0, 0,
+						0, 0, s.z, 0,
+						0, 0, 0, 1);
 	}
 #pragma endregion
 
