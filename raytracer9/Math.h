@@ -179,6 +179,11 @@
 		return __max(a.x, __max(a.y, a.z));
 	}
 
+	inline float min_comp(vec3 a)
+	{
+		return __min(a.x, __min(a.y, a.z));
+	}
+
 	inline vec3 reflect(vec3 d, vec3 n)
 	{
 		return d - 2.f  * (d.dot(n)) * n;
@@ -220,7 +225,6 @@
 				x = abs(t[i]); z = i;
 			}
 		}
-		t[z] = 1;
 		u = norm(t.cross(w));
 		v = w.cross(u);
 	}
