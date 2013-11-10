@@ -99,7 +99,7 @@ vec3 raycolor(const ray& r, hitrecord& hr, int depth = 0)
 	}
 	else
 	{
-		vec3 v = vec3(0, 0, 0);// +(r.d.dot(vec3(0, 1, 0))*vec3(0, 0.3f, 1));
+		vec3 v = vec3(0.1f, 0.1f, 0.1f);// +(r.d.dot(vec3(0, 1, 0))*vec3(0, 0.3f, 1));
 		//v.x = 0;
 		return v;
 	}

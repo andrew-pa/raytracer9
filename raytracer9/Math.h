@@ -220,11 +220,12 @@
 		int z = 0;
 		for (i = 1; i < 3; ++i)
 		{
-			if (x > abs(t[i])) 
+			if (x > abs(t[i]))
 			{
 				x = abs(t[i]); z = i;
 			}
 		}
+		t[z] = 1;
 		u = norm(t.cross(w));
 		v = w.cross(u);
 	}
