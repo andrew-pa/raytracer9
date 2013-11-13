@@ -3,10 +3,10 @@
 #include <math.h>
 #include <stdlib.h>
 
-
-
 	typedef unsigned int uint;
 #define PI 3.14159265358979323846f
+
+#define to_rad(deg) (((deg)*PI) / 180)
 
 	inline float randf()
 	{
@@ -153,7 +153,7 @@
 	{
 		return (a.x < b.x) && (a.y < b.y) && (a.z < b.z);
 	}
-	inline bool operator ==(vec3 a, vec3 b)
+	inline bool operator ==(const vec3& a, const vec3& b)
 	{
 		return (a.x == b.x) && (a.y == b.y) && (a.z == b.z);
 	}
@@ -746,6 +746,11 @@
 						 sinf(z),  cosf(z), 0, 0, 
 						 0,		   0,       1, 0,
 						 0,        0,       0, 1);
+	}
+
+	inline matrix4x4 matrix_rotation(vec3 v)
+	{
+		return matrix_rotation_x(v.x) * matrix_rotation_y(v.y) * matrix_rotation_z(v.z);
 	}
 
 	inline matrix4x4 matrix_scale(vec3 s)

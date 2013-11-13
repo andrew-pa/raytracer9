@@ -26,8 +26,9 @@ namespace raytracer9
 	public:
 		vec3 diffuse;
 		vec3 emit;
-		material(vec3 d, vec3 e)
-			: diffuse(d), emit(e) { }
+		ITexture* tex;
+		material(vec3 d, vec3 e, ITexture* t = nullptr)
+			: diffuse(d), emit(e), tex(t) { }
 	};
 
 	class Primitive

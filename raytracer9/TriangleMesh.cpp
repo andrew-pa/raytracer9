@@ -31,7 +31,10 @@ namespace raytracer9
 	}
 	bool operator ==(const TriangleMesh::vertex& a, const TriangleMesh::vertex& b)
 	{
-		return a.pos.x == b.pos.x && a.pos.y == b.pos.y && a.pos.z == b.pos.z;	
+		return a.pos.x == b.pos.x && a.pos.y == b.pos.y && a.pos.z == b.pos.z &&
+			a.norm.x == b.norm.x && a.norm.y == b.norm.y && a.norm.z == b.norm.z &&
+			a.texc.x == b.texc.x && a.texc.y == b.texc.y;
+
 	}
 
 	inline vec3 readvec3(istream& i)
@@ -203,7 +206,7 @@ namespace raytracer9
 
 	bool TriangleMesh::hit(const ray& r, hitrecord& hr)
 	{
-		ray rd = ray(_inv_world.transform(r.e), norm(_inv_world.transform(r.d, 0)));
+		ray rd = ray(_inv_world.transform(r.e), (_inv_world.transform(r.d, 0)));
 		if(_tree->hit(rd, hr))
 		{
 			hr.norm = matrix_tranpose(_inv_world).transform(hr.norm, 0);
