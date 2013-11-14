@@ -69,9 +69,9 @@ vec3 cosdistrib(vec3 n)
 	float e2 = randf();
 	float se2 = sqrtf(e2);
 	float t2e = 2 * PI* e1;
-	return (cosf(t2e)*se2*u) +
+	return norm((cosf(t2e)*se2*u) +
 		(sinf(t2e)*se2*v) +
-		(sqrtf(1 - e2)*w);
+		(sqrtf(1 - e2)*w));
 }
 
 
@@ -87,7 +87,7 @@ public:
 
 	const float sample_count = 16.f;
 	const float bounce_count = 4.f;
-	const int   depth_count  = 4;
+	const int   depth_count  = 8;
 
 	uint ray_count = 0;
 
@@ -104,12 +104,12 @@ public:
 				return hr.p->mat()->emit;
 			//	vec3 rd = cosdistrib(hr.norm);
 			hitrecord hrr;
-			hrr.t = 10000;
+			hrr.t = 1000000;
 			vec3 c = vec3(0);// (hr.p->mat()->diffuse * raycolor(ray(r.e + ((hr.t - 0.01f)*r.d), rd), hrr, depth + 1));
-			vec3 dt = hr.p->mat()->diffuse + (hr.p->mat()->tex != nullptr ? hr.p->mat()->tex->Texel(hr.textureCoord) : vec3(0));
+			vec3 dt = hr.p->mat()->diffuse * (hr.p->mat()->tex != nullptr ? hr.p->mat()->tex->Texel(hr.textureCoord) : vec3(1));
 		//	for (float i = 0; i < bounce_count; ++i)
 		//	{
-				vec3 v = (dt * raycolor(ray(r.e + ((hr.t-0.01f)*r.d), cosdistrib(hr.norm)), hrr, depth + 1));
+			vec3 v =  (dt * raycolor(ray(r.e + ((hr.t - 0.01f)*r.d), cosdistrib(hr.norm)), hrr, depth + 1));
 				return v;
 				//c = c + v;
 		//	}
@@ -118,7 +118,7 @@ public:
 		}
 		else
 		{
-			vec3 v = vec3(0.1f, 0.1f, 0.1f);// +(r.d.dot(vec3(0, 1, 0))*vec3(0, 0.3f, 1));
+			vec3 v = vec3(0.2f, 0.2f, 0.2f);// +(r.d.dot(vec3(0, 1, 0))*vec3(0, 0.3f, 1));
 			//v.x = 0;
 			return v;
 		}
@@ -138,7 +138,7 @@ public:
 				{
 					for (float q = 0; q < sample_count; ++q)
 					{
-						r = cam.generateRay(x + ((p+randfn()) * (1.f / sample_count)), y + ((q+randfn()) * (1.f / sample_count)));
+						r = cam.generateRay(x + ((q+randfn()) * (1.f / sample_count)), y + ((p+randfn()) * (1.f / sample_count)));
 						hr.t = 1000000;
 						renderTarget->Pixel(x, y) = renderTarget->Pixel(x, y) + raycolor(r, hr);
 					}
@@ -156,6 +156,10 @@ public:
 				//	c = vec3((st-30.0) / 20.0, 0, 0);
 			}
 		}
+	}
+
+	void render_via_work_queue()
+	{
 	}
 
 #define STD_THREAD
@@ -321,7 +325,7 @@ public:
 int main(int argc, char* argv[])
 {
 	srand(time(nullptr));
-	DisplayTexture2D tex(160, 120);
+	DisplayTexture2D tex(640, 480);
 
 	Camera cam(vec3(0, 0, -10), vec3(0), tex.Width(), tex.Height());
 
@@ -339,13 +343,16 @@ int main(int argc, char* argv[])
 	//		matrix_rotation_z(randfn() * 2 * PI) *
 	//		matrix_translate(vec3(randfn() * 8, randfn() * 8, randfn() * 8))));// , 8, 48));
 	//	prims.push_back(new Sphere(vec3(0, 3, 0), .5f, new material(vec3(0), vec3(10.f))));
-	prims.push_back(new TriangleMesh("open_box.obj", new material(vec3(0.8f, 0.8f, 0.8f), vec3(0.0f), new Texture2D("tex.bmp"))
-		/*,matrix_rotation(vec3(to_rad(45.f), to_rad(90.f), 0.f))*/ ));
+	//prims.push_back(new TriangleMesh("open_box.obj", new material(vec3(0.7f, 0.7f, 0.7f), vec3(0.0f),
+	//	nullptr)));
+	prims.push_back(new TriangleMesh("taj.obj", new material(vec3(0.7f, 0.7f, 0.7f), vec3(0.0f), 
+		nullptr )
+		, matrix_translate(vec3(0, -2, 0)) ));
 //	prims.push_back(new Sphere(vec3(-1, -2, 0), 0.5f, new material(vec3(0, 1, 0), vec3(0))));
-	prims.push_back(new Sphere(vec3(0, -2, 0), 0.5f, new material(vec3(.8f, .8f, .8f), vec3(0))));
+	//prims.push_back(new Sphere(vec3(0, -2, 0), 0.5f, new material(vec3(.7f, .7f, .7f), vec3(0))));
 //	prims.push_back(new Sphere(vec3(1, -2, 0), 0.5f, new material(vec3(1, 0, 0), vec3(0))));
 
-	prims.push_back(new TriangleMesh("light.obj", new material(vec3(0, 0, 0), vec3(4.0f)),
+	prims.push_back(new TriangleMesh("light.obj", new material(vec3(0, 0, 0), vec3(6.0f)),
 		/*matrix_scale(vec3(1, .1f, 1)) **/ matrix_translate(vec3(0, 2.0f, 0))));
 	auto ltmbt = (double)clock();
 	tmbt = ltmbt - tmbt;
@@ -360,7 +367,7 @@ int main(int argc, char* argv[])
 //	hitrecord hr;
 	auto st = (double)clock();
 
-	renderer.render(vec2(16, 16));
+	renderer.render(vec2(32, 32));
 	
 	//const float sample_count = 4.f;
 	//concurrency::parallel_for(0, (int)tex.Height(), [&](int _y) 
@@ -414,6 +421,12 @@ int main(int argc, char* argv[])
 	double avg_ray_time = (et - st) / rc;
 	cout << "Avg ray took " << avg_ray_time << " clocks" << endl;
 	//cout << "Max pixel time " << renderer.max_pix_time << " clocks" << endl;
+
+	ostringstream txt;
+	txt << "RENDER TOOK " << (et - st) << " CLOCKS ::" << (et - st) / (double)CLOCKS_PER_SEC << " SECONDS" << endl;
+	txt << "SHOT " << renderer.ray_count << " RAYS" << endl;
+	txt << "AVG RAY TOOK " << avg_ray_time << " CLOCKS" << endl;
+	DrawText(&tex, txt.str(), vec2(0, 0), vec3(.8f, .8f, .8f));
 
 	ostringstream fnm;
 	fnm << "img" << time(nullptr) << ".bmp";

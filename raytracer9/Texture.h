@@ -1,4 +1,5 @@
 #pragma once
+#include "stdinc.h"
 #include "Math.h"
 
 namespace raytracer9
@@ -11,6 +12,7 @@ namespace raytracer9
 		inline virtual float Height() const = 0;
 		inline virtual float Width() const = 0;
 	};
+
 
 	class Texture2D : public ITexture
 	{
@@ -49,6 +51,8 @@ namespace raytracer9
 		inline float Width() const override { return (float)w; }
 		inline float Height() const override { return (float)h; }
 	};
+
+	void DrawText(Texture2D* texture, const std::string& text, vec2 pos, vec3 color);
 
 	class CheckerTexture : public ITexture
 	{

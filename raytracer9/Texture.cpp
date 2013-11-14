@@ -160,4 +160,355 @@ namespace raytracer9
 		//bitmap.Dispose();
 		stbi_write_bmp(bmpFilename, w, h, 4, imgdata);
 	}
+
+	void DrawText(Texture2D* texture, const std::string& text, vec2 pos, vec3 color)
+	{
+		const int char_width = 5;
+		const int char_height = 7;
+		static std::map<char, string>* chars = nullptr;
+		if (chars == nullptr)
+		{
+			//bulid chars map
+			chars = new std::map<char, string>;
+#pragma region ABCs
+			(*chars)['A'] =
+				"xxxxx"
+				"x...x"
+				"x...x"
+				"xxxxx"
+				"x...x"
+				"x...x"
+				"x...x";
+			(*chars)['B'] =
+				"xxxx."
+				"x...x"
+				"x...x"
+				"xxxx."
+				"x...x"
+				"x...x"
+				"xxxx.";
+			(*chars)['C'] =
+				".xxxx"
+				"x...."
+				"x...."
+				"x...."
+				"x...."
+				"x...."
+				".xxxx";
+			(*chars)['D'] =
+				"xxxx."
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"xxxx.";
+			(*chars)['E'] =
+				"xxxxx"
+				"x...."
+				"x...."
+				"xxxxx"
+				"x...."
+				"x...."
+				"xxxxx";
+			(*chars)['F'] =
+				"xxxxx"
+				"x...."
+				"x...."
+				"xxxxx"
+				"x...."
+				"x...."
+				"x....";
+			(*chars)['G'] =
+				"xxxxx"
+				"x...."
+				"x...."
+				"x..xx"
+				"x...x"
+				"x...x"
+				"xxxxx";
+			(*chars)['H'] =
+				"x...x"
+				"x...x"
+				"x...x"
+				"xxxxx"
+				"x...x"
+				"x...x"
+				"x...x";
+			(*chars)['I'] =
+				"xxxxx"
+				"..x.."
+				"..x.."
+				"..x.."
+				"..x.."
+				"..x.."
+				"xxxxx";
+			(*chars)['J'] =
+				"xxxxx"
+				"...x."
+				"...x."
+				"...x."
+				"...x."
+				"x..x."
+				".xx..";
+			(*chars)['K'] =
+				"x...x"
+				"x..x."
+				"x.x.."
+				"xx..."
+				"x.x.."
+				"x..x."
+				"x...x";
+			(*chars)['L'] =
+				"x...."
+				"x...."
+				"x...."
+				"x...."
+				"x...."
+				"x...."
+				"xxxxx";
+			(*chars)['M'] =
+				"xxxxx"
+				"x.x.x"
+				"x.x.x"
+				"x.x.x"
+				"x.x.x"
+				"x...x"
+				"x...x";
+			(*chars)['N'] =
+				"x...x"
+				"xx..x"
+				"xx..x"
+				"x.x.x"
+				"x..xx"
+				"x..xx"
+				"x...x";
+			(*chars)['O'] =
+				"xxxxx"
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"xxxxx";
+			(*chars)['P'] =
+				"xxxxx"
+				"x...x"
+				"x...x"
+				"xxxxx"
+				"x...."
+				"x...."
+				"x....";
+			(*chars)['Q'] =
+				"xxxxx"
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"xxxx."
+				"....x";
+			(*chars)['R'] =
+				"xxxxx"
+				"x...x"
+				"x...x"
+				"xxxxx"
+				"x.x.."
+				"x..x."
+				"x...x";
+			(*chars)['S'] =
+				"xxxxx"
+				"x...."
+				"x...."
+				"xxxxx"
+				"....x"
+				"....x"
+				"xxxxx";
+			(*chars)['T'] =
+				"xxxxx"
+				"..x.."
+				"..x.."
+				"..x.."
+				"..x.."
+				"..x.."
+				"..x..";
+			(*chars)['U'] =
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"xxxxx";
+			(*chars)['V'] =
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				"x...x"
+				".xxx.";
+			(*chars)['W'] =
+				"x...x"
+				"x...x"
+				"x...x"
+				"x.x.x"
+				"x.x.x"
+				"x.x.x"
+				"xxxxx";
+			(*chars)['X'] =
+				"x...x"
+				".x.x."
+				".x.x."
+				"..x.."
+				".x.x."
+				".x.x."
+				"x...x";
+			(*chars)['Y'] =
+				"x...x"
+				"x...x"
+				"x...x"
+				"xxxxx"
+				"..x.."
+				"..x.."
+				"..x..";
+			(*chars)['Z'] =
+				"xxxxx"
+				"....x"
+				"...x."
+				"...x."
+				"..x.."
+				".x..."
+				"xxxxx";
+
+			(*chars)['0'] =
+				"xxxxx"
+				"xx..x"
+				"x.x.x"
+				"x.x.x"
+				"x.x.x"
+				"x..xx"
+				"xxxxx";
+			(*chars)['1'] =
+				".xx.."
+				"x.x.."
+				"..x.."
+				"..x.."
+				"..x.."
+				"..x.."
+				"xxxxx";
+			(*chars)['2'] =
+				".xxx."
+				"x...x"
+				"....x"
+				"...x."
+				".xx.."
+				"x...."
+				"xxxxx";
+			(*chars)['3'] =
+				"xxxx."
+				"....x"
+				"....x"
+				"..xx."
+				"....x"
+				"....x"
+				"xxxx.";
+			(*chars)['4'] =
+				"...xx"
+				".x..x"
+				"x...x"
+				"xxxxx"
+				"....x"
+				"....x"
+				"....x";
+			(*chars)['5'] =
+				"xxxxx"
+				"x...."
+				"x...."
+				"xxxx."
+				"....x"
+				"....x"
+				"xxxx.";
+			(*chars)['6'] =
+				".xxxx"
+				"x...."
+				"x...."
+				"xxxx."
+				"x...x"
+				"x...x"
+				".xxx."; 
+			(*chars)['7'] =
+				"xxxxx"
+				"....x"
+				"...x."
+				"...x."
+				"..x.."
+				".x..."
+				"x...."; 
+			(*chars)['8'] =
+				".xxx."
+				"x...x"
+				"x...x"
+				".xxx."
+				"x...x"
+				"x...x"
+				".xxx."; 
+			(*chars)['9'] =
+				".xxx."
+				"x...x"
+				"x...x"
+				".xxxx"
+				"....x"
+				"....x"
+				"xxxx.";
+			(*chars)[':'] =
+				"..x.."
+				"..x.."
+				"..x.."
+				"....."
+				"..x.."
+				"..x.."
+				"..x..";
+			(*chars)['.'] =
+				"....."
+				"....."
+				"....."
+				"....."
+				"....."
+				"xx..."
+				"xx...";
+#pragma endregion
+		}
+		vec2 texpos = pos;
+		for (auto c : text)
+		{
+			if (c == ' ')
+			{
+				texpos.x += char_width + 2;
+				continue;
+			}
+			if (c == '\n')
+			{
+				texpos.x = pos.x;
+				texpos.y += char_height + 1;
+				continue;
+			}
+			string chrm = (*chars)[c];
+			vec2 cpos = vec2(0, 0);
+			for (auto c : chrm)
+			{
+				if(c == 'x')
+					texture->Pixel(cpos.x + texpos.x, cpos.y + texpos.y) = color;
+				cpos.x++;
+				if (cpos.x >= char_width)
+				{
+					cpos.x = 0;
+					cpos.y++;
+					if (cpos.y > char_height)
+						break;
+				}
+			}
+			texpos.x += char_width + 2;
+		}
+
+	}
 }

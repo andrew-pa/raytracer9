@@ -214,18 +214,18 @@
 	inline void make_orthonormal_frame(vec3& w, vec3& u, vec3& v)
 	{
 		w = norm(w);
-		vec3 t = w;
-		int i;
-		float x = abs(t.x);
-		int z = 0;
-		for (i = 1; i < 3; ++i)
-		{
-			if (x > abs(t[i]))
-			{
-				x = abs(t[i]); z = i;
-			}
-		}
-		t[z] = 1;
+		vec3 t = (fabsf(w.x) > .1 ? vec3(0, 1, 0) : vec3(1, 0, 0));
+	//	int i;
+	//	float x = abs(t.x);
+	//	int z = 0;
+	//	for (i = 1; i < 3; ++i)
+	//	{
+	//		if (x > abs(t[i]))
+	//		{
+	///			x = abs(t[i]); z = i;
+	//		}
+	//	}
+	//	t[z] = 1;
 		u = norm(t.cross(w));
 		v = w.cross(u);
 	}
