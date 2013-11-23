@@ -11,13 +11,19 @@ using namespace raytracer9;
 #include "BVHTree.h"
 #include "TriangleMesh.h"
 
-#include <ppl.h>
+namespace windows
+{
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#undef DrawText
+};
 
 #include <PixelToaster.h>
 class DisplayTexture2D : public Texture2D, public PixelToaster::Listener
 {
 	PixelToaster::Display* display;
 	vector<PixelToaster::Pixel> pxs;
+	mutex pxlk;
 	vec2 mc;
 	vec2 dmc;
 public:
@@ -31,6 +37,7 @@ public:
 
 	inline void Update()
 	{
+		pxlk.lock();
 		pxs = vector<PixelToaster::Pixel>(w*h);
 		for(int y = 0; y < h; ++y)
 		{
@@ -43,6 +50,7 @@ public:
 		}
 		dmc = vec2();
 		display->update(pxs);
+		pxlk.unlock();
 	}
 
 	inline PixelToaster::Display* Display() { return display; }
@@ -57,6 +65,13 @@ public:
 		mc.y = m.y/display->height();
 		dmc = mc - lmc;
 		lmc = mc;
+	}
+
+	inline void lock() {
+		return pxlk.lock();
+	}
+	inline void unlock() {
+		return pxlk.unlock();
 	}
 };
 
@@ -80,14 +95,14 @@ class Renderer
 public:
 	BVHNode* scene;
 	Camera cam;
-	Texture2D* renderTarget;
+	DisplayTexture2D* renderTarget;
 
-	Renderer(BVHNode* s, Camera c, Texture2D* rt)
+	Renderer(BVHNode* s, Camera c, DisplayTexture2D* rt)
 		: scene(s), cam(c), renderTarget(rt) { }
 
 	const float sample_count = 16.f;
-	const float bounce_count = 4.f;
-	const int   depth_count  = 8;
+	//const float bounce_count = 4.f;
+	const int   depth_count  = 4;
 
 	uint ray_count = 0;
 
@@ -158,10 +173,6 @@ public:
 		}
 	}
 
-	void render_via_work_queue()
-	{
-	}
-
 #define STD_THREAD
 	void render(vec2 tile_size = vec2(16, 16))
 	{
@@ -203,9 +214,11 @@ public:
 				cout << "Thread " << this_thread::get_id() << " rendered " << chunks_rendered << " chunks" << endl;
 			}));
 		}
+		
 		for (auto& t : threads)
 		{
 			t.join();
+			this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 #else 
 		vector<vec2> tiles;
@@ -326,16 +339,15 @@ int main(int argc, char* argv[])
 {
 	srand(time(nullptr));
 	DisplayTexture2D tex(640, 480);
+	Camera cam(vec3(0, 5, -7), vec3(0), tex.Width(), tex.Height());
 
-	Camera cam(vec3(0, 0, -10), vec3(0), tex.Width(), tex.Height());
-
-	CheckerTexture ctx(vec3(0, .5f, 0), vec3(.5f, .5f, 0), 1, 2, 2);
+	CheckerTexture ctx(vec3(0, .5f, 0), vec3(.5f, .5f, 0));
 	//Texture2D ctx("tex.bmp");
 
 	vector<Primitive*> prims;
 	//for(int i = 0; i < 16; ++i)
 	//	prims.push_back(new Sphere(vec3(randfn()*6, randfn()*6, randfn()*6), 0.5f));
-	auto tmbt = (double)clock();
+	//auto tmbt = (double)clock();
 	//	for (int i = 0; i < 16; ++i)
 	//		prims.push_back(new TriangleMesh("tri.obj", new material(vec3(randfn(), randfn(), randfn()), vec3((rand() % 8 != 0 ? 0 : 1))),
 	//		matrix_rotation_x(randfn() * 2 * PI) *
@@ -345,8 +357,8 @@ int main(int argc, char* argv[])
 	//	prims.push_back(new Sphere(vec3(0, 3, 0), .5f, new material(vec3(0), vec3(10.f))));
 	//prims.push_back(new TriangleMesh("open_box.obj", new material(vec3(0.7f, 0.7f, 0.7f), vec3(0.0f),
 	//	nullptr)));
-	prims.push_back(new TriangleMesh("taj.obj", new material(vec3(0.7f, 0.7f, 0.7f), vec3(0.0f), 
-		nullptr )
+	prims.push_back(new TriangleMesh("taj.obj", new material(vec3(0.7f, 0.7f, 0.3f), vec3(0.0f), 
+		&ctx )
 		, matrix_translate(vec3(0, -2, 0)) ));
 //	prims.push_back(new Sphere(vec3(-1, -2, 0), 0.5f, new material(vec3(0, 1, 0), vec3(0))));
 	//prims.push_back(new Sphere(vec3(0, -2, 0), 0.5f, new material(vec3(.7f, .7f, .7f), vec3(0))));
@@ -354,9 +366,9 @@ int main(int argc, char* argv[])
 
 	prims.push_back(new TriangleMesh("light.obj", new material(vec3(0, 0, 0), vec3(6.0f)),
 		/*matrix_scale(vec3(1, .1f, 1)) **/ matrix_translate(vec3(0, 2.0f, 0))));
-	auto ltmbt = (double)clock();
-	tmbt = ltmbt - tmbt;
-	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
+	//auto ltmbt = (double)clock();
+//	tmbt = ltmbt - tmbt;
+//	cout << "Tree build for trimesh took " << tmbt << " clocks" << endl;
 	//OctreeNode ot = OctreeNode(aabb(vec3(-10), vec3(10)), prims, 16);
 	Renderer renderer = Renderer(new BVHNode(prims), cam, &tex);
 
@@ -365,10 +377,18 @@ int main(int argc, char* argv[])
 	//float x//, y;
 //	ray r(vec3(0), vec3(0));
 //	hitrecord hr;
-	auto st = (double)clock();
+//	auto st = (double)clock();
+	windows::LARGE_INTEGER frq;
+	windows::QueryPerformanceFrequency(&frq);
+	cout << "Render starting" << endl;
+	windows::LARGE_INTEGER st;
+	windows::QueryPerformanceCounter(&st);
 
 	renderer.render(vec2(32, 32));
-	
+	windows::LARGE_INTEGER et;
+	windows::QueryPerformanceCounter(&et);
+	auto cycles = (et.QuadPart - st.QuadPart);
+	double secs = (double)cycles / (double)frq.QuadPart;
 	//const float sample_count = 4.f;
 	//concurrency::parallel_for(0, (int)tex.Height(), [&](int _y) 
 	//{
@@ -413,17 +433,17 @@ int main(int argc, char* argv[])
 	//}
 
 
-	auto et = (double)clock();
+//	auto et = (double)clock();
 
-	cout << "Render took " << (et - st) << " clocks (" << (et - st) / (double)CLOCKS_PER_SEC << " seconds)" << endl;
+	cout << "Render took " << cycles << " clocks (" << secs << " seconds)" << endl;
 	cout << "Shot " << renderer.ray_count << " rays" << endl;
 	double rc = renderer.ray_count;
-	double avg_ray_time = (et - st) / rc;
+	double avg_ray_time = cycles / rc;
 	cout << "Avg ray took " << avg_ray_time << " clocks" << endl;
 	//cout << "Max pixel time " << renderer.max_pix_time << " clocks" << endl;
 
 	ostringstream txt;
-	txt << "RENDER TOOK " << (et - st) << " CLOCKS ::" << (et - st) / (double)CLOCKS_PER_SEC << " SECONDS" << endl;
+	txt << "RENDER TOOK " << cycles << " CLOCKS :: " << secs << " SECONDS" << endl;
 	txt << "SHOT " << renderer.ray_count << " RAYS" << endl;
 	txt << "AVG RAY TOOK " << avg_ray_time << " CLOCKS" << endl;
 	DrawText(&tex, txt.str(), vec2(0, 0), vec3(.8f, .8f, .8f));

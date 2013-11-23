@@ -10,4 +10,5 @@
 #include <thread>
 #include <mutex>
 #include <queue>
+#include <stack>
 using namespace std;

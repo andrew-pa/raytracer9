@@ -25,5 +25,6 @@ namespace raytracer9
 
 		inline material*& mat() { throw exception("BVHTree has no material"); }
 	};
+
 }
 

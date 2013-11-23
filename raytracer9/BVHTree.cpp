@@ -82,4 +82,5 @@ namespace raytracer9
 		}
 		return false;
 	}
+
 };
