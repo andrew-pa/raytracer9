@@ -338,7 +338,7 @@ public:
 int main(int argc, char* argv[])
 {
 	srand(time(nullptr));
-	DisplayTexture2D tex(640, 480);
+	DisplayTexture2D tex(160, 120);
 	Camera cam(vec3(0, 5, -7), vec3(0), tex.Width(), tex.Height());
 
 	CheckerTexture ctx(vec3(0, .5f, 0), vec3(.5f, .5f, 0));
