@@ -24,7 +24,10 @@ namespace raytracer9
 		inline const Primitive* right() const { return _right; }
 
 		inline material*& mat() { throw exception("BVHTree has no material"); }
+
+		friend bool bvh_tree_hit_stack(BVHNode* root, const ray& r, hitrecord& hr);
 	};
 
+	bool bvh_tree_hit_stack(BVHNode* root, const ray& r, hitrecord& hr);
 }
 

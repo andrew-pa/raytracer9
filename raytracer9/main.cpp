@@ -100,7 +100,7 @@ public:
 	Renderer(BVHNode* s, Camera c, DisplayTexture2D* rt)
 		: scene(s), cam(c), renderTarget(rt) { }
 
-	const float sample_count = 16.f;
+	const float sample_count = 2.f;
 	//const float bounce_count = 4.f;
 	const int   depth_count  = 4;
 
@@ -112,7 +112,7 @@ public:
 	{
 		if (depth > depth_count) return vec3(0, 0, 0);
 		ray_count++;
-		if (scene->hit(r, hr))
+		if (bvh_tree_hit_stack(scene, r, hr)) //(scene->hit(r, hr))
 		{
 			//return vec3(1);
 			if (hr.p->mat()->emit.sqrlength() > 0)
@@ -338,7 +338,7 @@ public:
 int main(int argc, char* argv[])
 {
 	srand(time(nullptr));
-	DisplayTexture2D tex(160, 120);
+	DisplayTexture2D tex(320, 240);
 	Camera cam(vec3(0, 5, -7), vec3(0), tex.Width(), tex.Height());
 
 	CheckerTexture ctx(vec3(0, .5f, 0), vec3(.5f, .5f, 0));
