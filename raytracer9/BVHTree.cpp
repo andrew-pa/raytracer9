@@ -61,7 +61,7 @@ namespace raytracer9
 				hr = lhr;
 				return true;
 			}
-			else
+			else if(rhr.t < lhr.t)
 			{
 				hr = rhr;
 				return true;

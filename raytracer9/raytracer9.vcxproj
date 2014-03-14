@@ -39,8 +39,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>C:\Users\Andrew\Documents\lib\pixeltoasterro;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Andrew\Documents\lib\pixeltoasterro\build;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\andre_000\Source\shared_lib\pixeltoasterro;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\andre_000\Source\shared_lib\pixeltoasterro\build;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -100,7 +100,7 @@ public:
 	Renderer(BVHNode* s, Camera c, DisplayTexture2D* rt)
 		: scene(s), cam(c), renderTarget(rt) { }
 
-	const float sample_count = 2.f;
+	const float sample_count = 32.f;
 	//const float bounce_count = 4.f;
 	const int   depth_count  = 4;
 
@@ -112,7 +112,7 @@ public:
 	{
 		if (depth > depth_count) return vec3(0, 0, 0);
 		ray_count++;
-		if (bvh_tree_hit_stack(scene, r, hr)) //(scene->hit(r, hr))
+		if (scene->hit(r, hr))
 		{
 			//return vec3(1);
 			if (hr.p->mat()->emit.sqrlength() > 0)
@@ -338,8 +338,8 @@ public:
 int main(int argc, char* argv[])
 {
 	srand(time(nullptr));
-	DisplayTexture2D tex(320, 240);
-	Camera cam(vec3(0, 5, -7), vec3(0), tex.Width(), tex.Height());
+	DisplayTexture2D tex(640, 480);
+	Camera cam(vec3(0, 3, -7), vec3(0), tex.Width(), tex.Height());
 
 	CheckerTexture ctx(vec3(0, .5f, 0), vec3(.5f, .5f, 0));
 	//Texture2D ctx("tex.bmp");
@@ -359,7 +359,7 @@ int main(int argc, char* argv[])
 	//	nullptr)));
 	prims.push_back(new TriangleMesh("taj.obj", new material(vec3(0.7f, 0.7f, 0.3f), vec3(0.0f), 
 		&ctx )
-		, matrix_translate(vec3(0, -2, 0)) ));
+		, matrix_translate(vec3(0, -3, 0)) ));
 //	prims.push_back(new Sphere(vec3(-1, -2, 0), 0.5f, new material(vec3(0, 1, 0), vec3(0))));
 	//prims.push_back(new Sphere(vec3(0, -2, 0), 0.5f, new material(vec3(.7f, .7f, .7f), vec3(0))));
 //	prims.push_back(new Sphere(vec3(1, -2, 0), 0.5f, new material(vec3(1, 0, 0), vec3(0))));
